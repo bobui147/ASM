@@ -12,7 +12,7 @@ public class JakartaRestConfiguration extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
         // Tạm thời comment để tránh lỗi nếu Jackson chưa tải
-//         classes.add(org.glassfish.jersey.jackson.JacksonFeature.class);
+         classes.add(org.glassfish.jersey.jackson.JacksonFeature.class);
         return classes;
     }
 }
