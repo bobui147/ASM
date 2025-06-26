@@ -48,12 +48,14 @@
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-            <version>3.0.0</version> <!-- Thay 3.0.0-RC1 bằng 3.0.0 -->
+            <version>3.0.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
-            <version>3.0.0</version> <!-- Thay 3.0.0-RC1 bằng 3.0.0 -->
+            <version>3.0.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Jersey for JAX-RS -->
@@ -100,7 +102,23 @@
     <repositories>
         <repository>
             <id>central</id>
-            <url>https://repo1.maven.org/maven2/</url>
+            <name>Maven Central</name>
+            <url>https://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>alimaven</id>
+            <name>aliyun maven</name>
+            <url>https://maven.aliyun.com/repository/public</url>
         </repository>
     </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>jakarta.servlet.jsp.jstl</groupId>
+                <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+                <version>3.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 </project>

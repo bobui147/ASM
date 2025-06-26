@@ -4,10 +4,10 @@
 <body>
     <h2>Approve/Reject Leave</h2>
     <form action="approveLeave" method="post">
-        <input type="hidden" name="leaveID" value="${leave.leaveID}">
+        <input type="hidden" name="requestId" value="${leave.requestId}">
         <p>Title: ${leave.title}</p>
-        <p>From: ${leave.fromDate}</p>
-        <p>To: ${leave.toDate}</p>
+        <p>Start: ${leave.startDate}</p>
+        <p>End: ${leave.endDate}</p>
         <p>Reason: ${leave.reason}</p>
         <label>Processed Reason: <input type="text" name="processedReason"></label><br>
         <input type="submit" name="action" value="approve"> 

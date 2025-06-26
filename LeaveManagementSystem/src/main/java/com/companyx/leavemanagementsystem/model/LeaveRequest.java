@@ -1,52 +1,60 @@
 package com.companyx.leavemanagementsystem.model;
 
 import jakarta.persistence.*;
+
 import java.util.Date;
 
 @Entity
-@Table(name = "LeaveRequests")
+@Table(name = "Leave_Requests")
 public class LeaveRequest {
     @Id
+    @Column(name = "request_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int leaveID;
+    private int requestId;
 
     @ManyToOne
-    @JoinColumn(name = "UserID")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "title")
     private String title;
 
-    @Column(nullable = false)
-    private Date fromDate;
+    @Column(name = "start_date", nullable = false)
+    private Date startDate;
 
-    @Column(nullable = false)
-    private Date toDate;
+    @Column(name = "end_date", nullable = false)
+    private Date endDate;
 
+    @Column(name = "reason")
     private String reason;
 
-    @Column(columnDefinition = "NVARCHAR(20) DEFAULT 'Inprogress'")
+    @Column(name = "status", nullable = false)
     private String status;
 
     @ManyToOne
-    @JoinColumn(name = "ProcessedByID")
+    @JoinColumn(name = "processed_by")
     private User processedBy;
 
+    @Column(name = "processed_reason")
     private String processedReason;
 
-    @Column(columnDefinition = "DATETIME DEFAULT GETDATE()")
+    @Column(name = "created_at")
     private Date createdAt;
 
+    @Column(name = "updated_at")
+    private Date updatedAt;
+
     // Getters và Setters
-    public int getLeaveID() { return leaveID; }
-    public void setLeaveID(int leaveID) { this.leaveID = leaveID; }
+    public int getRequestId() { return requestId; }
+    public void setRequestId(int requestId) { this.requestId = requestId; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
-    public Date getFromDate() { return fromDate; }
-    public void setFromDate(Date fromDate) { this.fromDate = fromDate; }
-    public Date getToDate() { return toDate; }
-    public void setToDate(Date toDate) { this.toDate = toDate; }
+    public Date getStartDate() { return startDate; }
+    public void setStartDate(Date startDate) { this.startDate = startDate; }
+    public Date getEndDate() { return endDate; }
+    public void setEndDate(Date endDate) { this.endDate = endDate; }
     public String getReason() { return reason; }
     public void setReason(String reason) { this.reason = reason; }
     public String getStatus() { return status; }
@@ -57,4 +65,6 @@ public class LeaveRequest {
     public void setProcessedReason(String processedReason) { this.processedReason = processedReason; }
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+    public Date getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
 }

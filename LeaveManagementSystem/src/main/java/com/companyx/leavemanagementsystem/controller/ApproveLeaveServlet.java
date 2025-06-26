@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/approveLeave")
 public class ApproveLeaveServlet extends HttpServlet {
@@ -32,22 +33,22 @@ public class ApproveLeaveServlet extends HttpServlet {
         }
 
         User user = (User) session.getAttribute("user");
-        if (user == null || !"Quản lý".equals(user.getRole().getRoleName())) {
+        if (user == null || !"Quản lý".equals(getRoleName(user))) {
             request.setAttribute("error", "Bạn không có quyền truy cập trang này.");
             request.getRequestDispatcher("viewLeaves.jsp").forward(request, response);
             return;
         }
 
-        String leaveIDParam = request.getParameter("leaveID");
-        if (leaveIDParam == null || leaveIDParam.trim().isEmpty()) {
+        String requestIdParam = request.getParameter("requestId");
+        if (requestIdParam == null || requestIdParam.trim().isEmpty()) {
             request.setAttribute("error", "ID đơn nghỉ phép không hợp lệ.");
             request.getRequestDispatcher("viewLeaves.jsp").forward(request, response);
             return;
         }
 
-        int leaveID;
+        int requestId;
         try {
-            leaveID = Integer.parseInt(leaveIDParam);
+            requestId = Integer.parseInt(requestIdParam);
         } catch (NumberFormatException e) {
             request.setAttribute("error", "ID đơn nghỉ phép không hợp lệ.");
             request.getRequestDispatcher("viewLeaves.jsp").forward(request, response);
@@ -56,7 +57,7 @@ public class ApproveLeaveServlet extends HttpServlet {
 
         EntityManager em = emf.createEntityManager();
         try {
-            LeaveRequest leave = em.find(LeaveRequest.class, leaveID);
+            LeaveRequest leave = em.find(LeaveRequest.class, requestId);
             if (leave == null) {
                 request.setAttribute("error", "Đơn nghỉ phép không tồn tại.");
                 request.getRequestDispatcher("viewLeaves.jsp").forward(request, response);
@@ -64,7 +65,7 @@ public class ApproveLeaveServlet extends HttpServlet {
             }
 
             User manager = leave.getUser().getManager();
-            if (manager == null || manager.getUserID() != user.getUserID()) {
+            if (manager == null || manager.getUserId() != user.getUserId()) {
                 request.setAttribute("error", "Bạn không có quyền duyệt đơn này.");
                 request.getRequestDispatcher("viewLeaves.jsp").forward(request, response);
                 return;
@@ -92,22 +93,22 @@ public class ApproveLeaveServlet extends HttpServlet {
         }
 
         User user = (User) session.getAttribute("user");
-        if (user == null || !"Quản lý".equals(user.getRole().getRoleName())) {
+        if (user == null || !"Quản lý".equals(getRoleName(user))) {
             request.setAttribute("error", "Bạn không có quyền truy cập trang này.");
             request.getRequestDispatcher("viewLeaves.jsp").forward(request, response);
             return;
         }
 
-        String leaveIDParam = request.getParameter("leaveID");
-        if (leaveIDParam == null || leaveIDParam.trim().isEmpty()) {
+        String requestIdParam = request.getParameter("requestId");
+        if (requestIdParam == null || requestIdParam.trim().isEmpty()) {
             request.setAttribute("error", "ID đơn nghỉ phép không hợp lệ.");
             request.getRequestDispatcher("approveLeave.jsp").forward(request, response);
             return;
         }
 
-        int leaveID;
+        int requestId;
         try {
-            leaveID = Integer.parseInt(leaveIDParam);
+            requestId = Integer.parseInt(requestIdParam);
         } catch (NumberFormatException e) {
             request.setAttribute("error", "ID đơn nghỉ phép không hợp lệ.");
             request.getRequestDispatcher("approveLeave.jsp").forward(request, response);
@@ -126,7 +127,7 @@ public class ApproveLeaveServlet extends HttpServlet {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            LeaveRequest leave = em.find(LeaveRequest.class, leaveID);
+            LeaveRequest leave = em.find(LeaveRequest.class, requestId);
             if (leave == null) {
                 em.getTransaction().rollback();
                 request.setAttribute("error", "Đơn nghỉ phép không tồn tại.");
@@ -135,7 +136,7 @@ public class ApproveLeaveServlet extends HttpServlet {
             }
 
             User manager = leave.getUser().getManager();
-            if (manager == null || manager.getUserID() != user.getUserID()) {
+            if (manager == null || manager.getUserId() != user.getUserId()) {
                 em.getTransaction().rollback();
                 request.setAttribute("error", "Bạn không có quyền duyệt đơn này.");
                 request.getRequestDispatcher("approveLeave.jsp").forward(request, response);
@@ -158,6 +159,18 @@ public class ApproveLeaveServlet extends HttpServlet {
             if (em != null && em.isOpen()) {
                 em.close();
             }
+        }
+    }
+
+    private String getRoleName(User user) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            List<?> roles = em.createQuery("SELECT ur.role.roleName FROM UserRole ur WHERE ur.user.userId = :userId")
+                    .setParameter("userId", user.getUserId())
+                    .getResultList();
+            return roles.isEmpty() ? "" : (String) roles.get(0);
+        } finally {
+            em.close();
         }
     }
 

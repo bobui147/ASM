@@ -6,33 +6,33 @@ import jakarta.persistence.*;
 @Table(name = "Users")
 public class User {
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userID;
+    private int userId;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "full_name", nullable = false)
     private String fullName;
 
     @ManyToOne
-    @JoinColumn(name = "DepartmentID")
+    @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
     @ManyToOne
-    @JoinColumn(name = "RoleID")
-    private Role role;
-
-    @ManyToOne
-    @JoinColumn(name = "ManagerID")
+    @JoinColumn(name = "manager_id")
     private User manager;
 
+    @Column(name = "email")
+    private String email;
+
     // Getters và Setters
-    public int getUserID() { return userID; }
-    public void setUserID(int userID) { this.userID = userID; }
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
     public String getPassword() { return password; }
@@ -41,8 +41,8 @@ public class User {
     public void setFullName(String fullName) { this.fullName = fullName; }
     public Department getDepartment() { return department; }
     public void setDepartment(Department department) { this.department = department; }
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
     public User getManager() { return manager; }
     public void setManager(User manager) { this.manager = manager; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }

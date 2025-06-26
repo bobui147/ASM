@@ -36,15 +36,15 @@ public class ViewLeavesServlet extends HttpServlet {
         EntityManager em = emf.createEntityManager();
         try {
             List<LeaveRequest> leaveRequests;
-            if ("Quản lý".equals(user.getRole().getRoleName())) {
+            if ("Quản lý".equals(getRoleName(user, em))) {
                 leaveRequests = em.createQuery(
-                    "SELECT l FROM LeaveRequest l WHERE l.user.manager.userID = :userID OR l.user.userID = :userID",
+                    "SELECT l FROM LeaveRequest l WHERE l.user.manager.userId = :userId OR l.user.userId = :userId",
                     LeaveRequest.class)
-                    .setParameter("userID", user.getUserID())
+                    .setParameter("userId", user.getUserId())
                     .getResultList();
             } else {
-                leaveRequests = em.createQuery("SELECT l FROM LeaveRequest l WHERE l.user.userID = :userID", LeaveRequest.class)
-                    .setParameter("userID", user.getUserID())
+                leaveRequests = em.createQuery("SELECT l FROM LeaveRequest l WHERE l.user.userId = :userId", LeaveRequest.class)
+                    .setParameter("userId", user.getUserId())
                     .getResultList();
             }
 
@@ -56,6 +56,13 @@ public class ViewLeavesServlet extends HttpServlet {
         } finally {
             em.close();
         }
+    }
+
+    private String getRoleName(User user, EntityManager em) {
+        List<?> roles = em.createQuery("SELECT ur.role.roleName FROM UserRole ur WHERE ur.user.userId = :userId")
+                .setParameter("userId", user.getUserId())
+                .getResultList();
+        return roles.isEmpty() ? "" : (String) roles.get(0);
     }
 
     @Override

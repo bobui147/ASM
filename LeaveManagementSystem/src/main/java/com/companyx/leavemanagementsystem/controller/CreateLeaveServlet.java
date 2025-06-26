@@ -34,8 +34,8 @@ public class CreateLeaveServlet extends HttpServlet {
         }
 
         String title = request.getParameter("title");
-        String fromDate = request.getParameter("fromDate");
-        String toDate = request.getParameter("toDate");
+        String startDateStr = request.getParameter("startDate");
+        String endDateStr = request.getParameter("endDate");
         String reason = request.getParameter("reason");
 
         EntityManager em = emf.createEntityManager();
@@ -44,8 +44,8 @@ public class CreateLeaveServlet extends HttpServlet {
             LeaveRequest leave = new LeaveRequest();
             leave.setUser(user);
             leave.setTitle(title);
-            leave.setFromDate(new SimpleDateFormat("yyyy-MM-dd").parse(fromDate));
-            leave.setToDate(new SimpleDateFormat("yyyy-MM-dd").parse(toDate));
+            leave.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse(startDateStr));
+            leave.setEndDate(new SimpleDateFormat("yyyy-MM-dd").parse(endDateStr));
             leave.setReason(reason);
             leave.setStatus("Inprogress");
             em.persist(leave);
