@@ -11,8 +11,11 @@ public class JakartaRestConfiguration extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
-        // Tạm thời comment để tránh lỗi nếu Jackson chưa tải
-         classes.add(org.glassfish.jersey.jackson.JacksonFeature.class);
+        // Đăng ký JacksonFeature để hỗ trợ JSON
+        classes.add(org.glassfish.jersey.jackson.JacksonFeature.class);
+        // Thêm các REST resources của bạn
+        classes.add(com.companyx.leavemanagementsystem.rest.UserResource.class); // Ví dụ
+        classes.add(com.companyx.leavemanagementsystem.rest.LeaveRequestResource.class); // Ví dụ
         return classes;
     }
 }
