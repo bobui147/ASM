@@ -10,6 +10,10 @@
             <a href="leave-request" class="nav-item nav-link">
                 <i class="fa fa-paper-plane me-2"></i>Request Leave
             </a>
+            <a href="leave-list" class="nav-item nav-link">
+                <i class="fa fa-list-alt me-2"></i>View Requests
+            </a>
+
         </div>
     </nav>
 </div>
