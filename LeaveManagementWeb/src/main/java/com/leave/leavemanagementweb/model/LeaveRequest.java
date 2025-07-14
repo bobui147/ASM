@@ -3,6 +3,7 @@ package com.leave.leavemanagementweb.model;
 import java.sql.Date;
 
 public class LeaveRequest {
+
     private int requestId;
     private int userId;
     private String employeeName;
@@ -11,8 +12,16 @@ public class LeaveRequest {
     private String reason;
     private String status;
     private String processedByName;
+    private String requesterName;
+    private String processedReason; // ✅ Thêm dòng này
 
-    // Getters and setters
+    public String getRequesterName() {
+        return requesterName;
+    }
+
+    public void setRequesterName(String name) {
+        this.requesterName = name;
+    }
 
     public int getRequestId() {
         return requestId;
@@ -76,5 +85,14 @@ public class LeaveRequest {
 
     public void setProcessedByName(String processedByName) {
         this.processedByName = processedByName;
+    }
+
+    // ✅ Thêm getter/setter mới
+    public String getProcessedReason() {
+        return processedReason;
+    }
+
+    public void setProcessedReason(String processedReason) {
+        this.processedReason = processedReason;
     }
 }
