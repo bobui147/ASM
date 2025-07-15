@@ -2,7 +2,8 @@
 <%
     User user = (User) session.getAttribute("user");
     boolean canProcess = user != null && (
-        "manager".equalsIgnoreCase(user.getRole()) || "supermanager".equalsIgnoreCase(user.getRole())
+        "manager".equalsIgnoreCase(user.getRole()) || 
+        "supermanager".equalsIgnoreCase(user.getRole())
     );
 %>
 
@@ -21,12 +22,12 @@
                 <i class="fa fa-calendar-plus me-2"></i>Request Leave
             </a>
             <a href="view-requests" class="nav-item nav-link">
-                <i class="fa fa-list-alt me-2"></i>View Requests
+                <i class="fa fa-list-alt me-2"></i>View My Requests
             </a>
             <% if (canProcess) { %>
-            <a href="view-requests" class="nav-item nav-link">
-                <i class="fa fa-check-circle me-2"></i>Process Requests
-            </a>
+                <a href="leave-list" class="nav-item nav-link">
+                    <i class="fa fa-tasks me-2"></i>Approve/Reject
+                </a>
             <% } %>
         </div>
     </nav>

@@ -71,6 +71,52 @@ public class LeaveRequestDAO {
         return parseResults(rs);
     }
 
+    public static List<LeaveRequest> getRequestsByUserScope(User user) {
+        List<LeaveRequest> list = new ArrayList<>();
+        String sql = """
+            SELECT lr.request_id, lr.start_date, lr.end_date, lr.reason, lr.status,
+                   lr.processed_reason,
+                   u.full_name AS requester_name,
+                   proc.full_name AS processed_by_name
+            FROM Leave_Requests lr
+            JOIN Users u ON lr.user_id = u.user_id
+            LEFT JOIN Users proc ON lr.processed_by = proc.user_id
+            WHERE lr.user_id = ? 
+               OR u.manager_id = ?
+               OR EXISTS (
+                   SELECT 1 FROM Access_Scope s
+                   WHERE s.accessor_id = ?
+                     AND (
+                         s.target_user_id = u.user_id
+                      OR s.target_department_id = u.department_id
+                     )
+               )
+        """;
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, user.getUserId()); // người dùng hiện tại
+            ps.setInt(2, user.getUserId()); // là manager của user khác
+            ps.setInt(3, user.getUserId()); // có trong Access_Scope
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                LeaveRequest r = new LeaveRequest();
+                r.setRequestId(rs.getInt("request_id"));
+                r.setStartDate(rs.getDate("start_date"));
+                r.setEndDate(rs.getDate("end_date"));
+                r.setReason(rs.getString("reason"));
+                r.setStatus(rs.getString("status"));
+                r.setRequesterName(rs.getString("requester_name"));
+                r.setProcessedByName(rs.getString("processed_by_name"));
+                r.setProcessedReason(rs.getString("processed_reason"));
+                list.add(r);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     private List<LeaveRequest> parseResults(ResultSet rs) throws SQLException {
         List<LeaveRequest> list = new ArrayList<>();
         while (rs.next()) {
@@ -83,46 +129,8 @@ public class LeaveRequestDAO {
             lr.setStatus(rs.getString("status"));
             lr.setEmployeeName(rs.getString("employee_name"));
             lr.setProcessedByName(rs.getString("processed_by_name"));
-            lr.setProcessedReason(rs.getString("processed_reason")); // ✅ BỔ SUNG
+            lr.setProcessedReason(rs.getString("processed_reason"));
             list.add(lr);
-        }
-        return list;
-    }
-
-    public static List<LeaveRequest> getRequestsByUserScope(User user) {
-        List<LeaveRequest> list = new ArrayList<>();
-        String sql = """
-            SELECT lr.request_id, lr.start_date, lr.end_date, lr.reason, lr.status,
-                   lr.processed_reason,                            -- ✅ thêm
-                   u.full_name AS requester_name
-            FROM Leave_Requests lr
-            JOIN Users u ON lr.user_id = u.user_id
-            WHERE lr.user_id = ? 
-               OR lr.user_id IN (SELECT user_id FROM Users WHERE manager_id = ?)
-               OR ? IN (
-                   SELECT accessor_id FROM Access_Scope 
-                   WHERE target_user_id = lr.user_id OR target_department_id = u.department_id
-               )
-        """;
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, user.getUserId()); // chính mình
-            ps.setInt(2, user.getUserId()); // cấp dưới
-            ps.setInt(3, user.getUserId()); // trong Access_Scope
-
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                LeaveRequest r = new LeaveRequest();
-                r.setRequestId(rs.getInt("request_id"));
-                r.setStartDate(rs.getDate("start_date"));
-                r.setEndDate(rs.getDate("end_date"));
-                r.setReason(rs.getString("reason"));
-                r.setStatus(rs.getString("status"));
-                r.setRequesterName(rs.getString("requester_name"));
-                r.setProcessedReason(rs.getString("processed_reason")); // ✅ THÊM
-                list.add(r);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return list;
     }
@@ -141,7 +149,7 @@ public class LeaveRequestDAO {
                 req.setEndDate(rs.getDate("end_date"));
                 req.setReason(rs.getString("reason"));
                 req.setStatus(rs.getString("status"));
-                req.setProcessedReason(rs.getString("processed_reason")); // ✅ THÊM
+                req.setProcessedReason(rs.getString("processed_reason"));
                 return req;
             }
         } catch (Exception e) {
@@ -162,5 +170,4 @@ public class LeaveRequestDAO {
             e.printStackTrace();
         }
     }
-
 }
