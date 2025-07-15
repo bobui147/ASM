@@ -5,7 +5,10 @@
         "manager".equalsIgnoreCase(user.getRole()) || 
         "supermanager".equalsIgnoreCase(user.getRole())
     );
+    boolean canProcess2 = user != null && "supermanager".equalsIgnoreCase(user.getRole());
 %>
+
+<div style="color:yellow">ROLE: <%= user != null ? user.getRole() : "null" %></div>
 
 <div class="sidebar pe-4 pb-3 bg-dark">
     <nav class="navbar bg-dark navbar-dark">
@@ -25,9 +28,14 @@
                 <i class="fa fa-list-alt me-2"></i>View My Requests
             </a>
             <% if (canProcess) { %>
-                <a href="leave-list" class="nav-item nav-link">
-                    <i class="fa fa-tasks me-2"></i>Approve/Reject
-                </a>
+            <a href="leave-list" class="nav-item nav-link">
+                <i class="fa fa-tasks me-2"></i>Approve/Reject
+            </a>
+            <% } %>
+            <% if (canProcess2) { %>
+            <a href="agenda" class="nav-item nav-link">
+                <i class="fa fa-table me-2"></i>Agenda
+            </a>
             <% } %>
         </div>
     </nav>
