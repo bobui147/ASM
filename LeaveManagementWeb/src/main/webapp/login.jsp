@@ -42,7 +42,7 @@
                 <form action="login" method="post">
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control bg-dark text-light" id="floatingInput" placeholder="Username" name="username" required>
-                        <label for="floatingInput" class="text-muted">Email address</label>
+                        <label for="floatingInput" class="text-muted">Username</label>
                     </div>
                     <div class="form-floating mb-4">
                         <input type="password" class="form-control bg-dark text-light" id="floatingPassword" placeholder="Password" name="password" required>

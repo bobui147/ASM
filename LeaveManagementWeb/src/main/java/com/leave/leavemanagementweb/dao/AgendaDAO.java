@@ -4,6 +4,9 @@ import com.leave.leavemanagementweb.model.AgendaRow;
 import com.leave.leavemanagementweb.util.DBConnection;
 import java.sql.*;
 import java.util.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.DayOfWeek;
 
 public class AgendaDAO {
     public static List<AgendaRow> getAgendaRows(List<String> dates) {
@@ -18,21 +21,26 @@ public class AgendaDAO {
                 String name = userRs.getString("full_name");
                 List<String> statuses = new ArrayList<>();
                 for (String d : dates) {
-                    // Chuyển d ("1/1") thành yyyy-MM-dd (ví dụ: 2024-01-01)
-                    String[] parts = d.split("/");
-                    String dateStr = String.format("2024-%02d-%02d", Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
-                    String agendaSql = "SELECT status FROM Agenda WHERE user_id=? AND date=?";
-                    PreparedStatement agendaStmt = conn.prepareStatement(agendaSql);
-                    agendaStmt.setInt(1, userId);
-                    agendaStmt.setDate(2, java.sql.Date.valueOf(dateStr));
-                    ResultSet agendaRs = agendaStmt.executeQuery();
-                    if (agendaRs.next()) {
-                        statuses.add(agendaRs.getString("status"));
+                    DateTimeFormatter dmy = DateTimeFormatter.ofPattern("d/M/yyyy");
+                    LocalDate date = LocalDate.parse(d, dmy);
+                    DayOfWeek dow = date.getDayOfWeek();
+                    if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY) {
+                        statuses.add(""); // Không tô màu gì
                     } else {
-                        statuses.add("Working"); // Mặc định nếu không có bản ghi là đi làm
+                        // Kiểm tra có đơn nghỉ phép đã duyệt không
+                        String sql = "SELECT 1 FROM Leave_Requests WHERE user_id=? AND status='Approved' AND start_date<=? AND end_date>=?";
+                        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                            ps.setInt(1, userId);
+                            ps.setDate(2, java.sql.Date.valueOf(date));
+                            ps.setDate(3, java.sql.Date.valueOf(date));
+                            ResultSet rs = ps.executeQuery();
+                            if (rs.next()) {
+                                statuses.add("OnLeave");
+                            } else {
+                                statuses.add("Working");
+                            }
+                        }
                     }
-                    agendaRs.close();
-                    agendaStmt.close();
                 }
                 result.add(new AgendaRow(name, statuses));
             }

@@ -7,6 +7,9 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @WebServlet("/agenda")
@@ -19,8 +22,16 @@ public class AgendaServlet extends HttpServlet {
             return;
         }
 
-        // Danh sách ngày mẫu
-        List<String> dates = Arrays.asList("1/1", "2/1", "3/1", "4/1", "5/1", "6/1", "7/1", "8/1", "9/1");
+        String startDateStr = req.getParameter("startDate");
+        if (startDateStr == null || startDateStr.isEmpty()) {
+            startDateStr = "2025-01-01";
+        }
+        LocalDate startDate = LocalDate.parse(startDateStr);
+        DateTimeFormatter dmy = DateTimeFormatter.ofPattern("d/M/yyyy");
+        List<String> dates = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            dates.add(startDate.plusDays(i).format(dmy));
+        }
 
         // Lấy dữ liệu thật từ DB
         List<AgendaRow> rows = AgendaDAO.getAgendaRows(dates);
