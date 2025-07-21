@@ -20,12 +20,8 @@
                         <thead>
                             <tr>
                                 <th class="align-middle">Employee</th>
-                                <% if (dates != null) for(String d : dates) { 
-                                    java.time.format.DateTimeFormatter inputFmt = java.time.format.DateTimeFormatter.ofPattern("d/M/yyyy");
-                                    java.time.format.DateTimeFormatter outFmt = java.time.format.DateTimeFormatter.ofPattern("MM-dd-yy");
-                                    java.time.LocalDate dateObj = java.time.LocalDate.parse(d, inputFmt);
-                                %>
-                                    <th class="align-middle"><%= dateObj.format(outFmt) %></th>
+                                <% if (dates != null) for(String d : dates) { %>
+                                    <th class="align-middle"><%= d %></th>
                                 <% } %>
                             </tr>
                         </thead>
